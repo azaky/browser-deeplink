@@ -6,69 +6,41 @@ Redirect your website users to your native Android and/or iOS app. If the user d
 Such functionality is very common for apps like YouTube, Spotify etc. But it is not default functionality in mobile browsers today, and unnecessarily hard to implement. This plugin uses a workaround with a hidden `iframe` and `setTimeout()`.
 
 How to use
--
 
 ### 1. Include browser-deeplink on your site.
 
 ```html
-<script src="browser-deeplink.js" type="text/javascript"></script>
+<script src="browser-deeplink[.min].js" type="text/javascript"></script>
 ```
 
-or
+### 2. Call the deeplink
 
 ```js
-require("./browser-deeplink");
-```
-
-### 2. Provide your app details
-```js
-deeplink.setup({
+deeplink({
     iOS: {
-        appName: "myapp",
-        appId: "123456789",
+        appName: "facebook",
+        storeUrl: "http://itunes.com/apps/facebook"
     },
     android: {
-        appId: "com.myapp.android"
-    }
+        appId: "com.facebook.katana",
+        storeUrl: "https://play.google.com/store/apps/details?id=com.facebook.katana"
+    },
+    delay: 1000, // in milliseconds
+    delayIOS: 3000, // in milliseconds
+}, function () { // this will be called if deeplinking failed or device is not mobile
+    alert('this is not a mobile device!');
 });
 ```
 
-This will create the following fallback app store links:
+`storeUrl` links will be called if the app is not installed in the device. Those fields are actually optionals, because browser-deeplink will automatically create the following fallback app store links if they are not present:
 
-**iOS:** `itms-apps://itunes.apple.com/app/myapp/id123456789?mt=8`    
-**Android:** `https://play.google.com/store/apps/details?id=com.myapp.android`
+**iOS:** `http://itunes.com/apps/<appName>`
+**Android:** `https://play.google.com/store/apps/details?id=<appId>`
 
-#### Options
+**Notes for iOS 9:** The behavior is a little bit different. A popup message will show up, either a confirmation to open the app, or error message if the app is not installed. This is normal, and after `delayIOS` milliseconds the user will be redirected to `storeUrl`. That's why delay for iOS should be longer than default delay. The default value for `delay` is 1000 and `delayIOS` is 3000 ms.
 
-Optionally, you can specify a `iOS.storeUrl` or `android.storeUrl` to override the fallback redirect.
-```js
-deeplink.setup({
-    iOS: {
-        storeUrl: "http://...",
-    }
-});
-```
-
-You can also skip the app store fallback altogether if you want by specifying `fallback: false`
-```js
-deeplink.setup({
-    fallback: false
-});
-```
-
-In case you want to register your android app on your http(s) links directly you can disable deeplinking for android  by specifying `androidDisabled: true`
-```js
-deeplink.setup({
-    androidDisabled: true
-});
-```
-
-### 3. Open your deeplinks!
-```js
-window.onload = function() {
-    deeplink.open("myapp://object/xyz");
-}
-```
+# Source
+This library is forked from [hampusohlsson/browser-deeplink](https://github.com/hampusohlsson/browser-deeplink), and also taking works of [mderazon/node-deeplink](https://github.com/mderazon/node-deeplink)
 
 # License
 This library is released under the MIT licence.
